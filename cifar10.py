@@ -22,41 +22,92 @@ for i, ax in enumerate(axes):
     label = labels_train[idx]
 
     ax.imshow(image)
-    ax.set_title(label_names[i])
+    ax.set_title(label_names[i], rotation='vertical')
     ax.axis("off")
 
 # --- Projektarbeit ---
-# K-Neigh-board Klasifisierung Methode
-
-# X = images_train
-# y = labels_train
-
-# Aufgabe a) --> TRAINING
-clf = KNeighborsClassifier(n_neighbors=3)
-clf.fit(images_train, labels_train)
-
-# Aufgabe b) --> PREDICTION
-pred_test = clf.predict(images_test)
-
-# Aufgabe c) -->
-print(f"score : {clf.score(images_test, labels_test)}")
-conf = confusion_matrix(labels_test, pred_test)
 
 
-if conf is not None:
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    ax.imshow(conf, cmap="YlGn")
-    # ax.axis("off")
-    ax.set_xlabel("prediction")
-    ax.set_ylabel("ground truth")
-    ax.set_xticks(label_names)
-    ax.set_yticks(label_names)
+def knn():
 
-    for i in range(10):
-        for j in range(10):
-            ax.text(j, i, "%d" % conf[i, j], color="black",
-                    horizontalalignment='center', verticalalignment='center')
+    # K-Neigh-board Klasifisierung Methode
+
+    # X = images_train
+    # y = labels_train
+
+    # Aufgabe a) --> TRAINING
+    neighbors = 10*3
+    clf = KNeighborsClassifier(n_neighbors=neighbors)
+    clf.fit(images_train, labels_train)
+
+    # Aufgabe b) --> PREDICTION
+    pred_test = clf.predict(images_test)
+
+    # Aufgabe c) -->
+    conf = confusion_matrix(labels_test, pred_test)
+    score = clf.score(images_test, labels_test)
+    print(f"score : {score:.5f}")
+
+    if conf is not None:
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        ax.imshow(conf, cmap="Blues")
+        # ax.axis("off")
+        ax.set_xlabel("prediction")
+        ax.set_ylabel("ground truth")
+
+        # labels = [item.get_text() for item in ax.get_xticklabels()]
+        # labels = label_names
+        # labels[1] = 'Testing'
+
+        ax.set_xticks(range(10))
+        ax.set_yticks(range(10))
+
+        ax.set_xticklabels(label_names, rotation='vertical')
+        ax.set_yticklabels(label_names)
+
+        for i in range(10):
+            for j in range(10):
+                ax.text(j, i, "%d" % conf[i, j], color="red",
+                        horizontalalignment='center', verticalalignment='center')
+
+    plt.title(
+        f"K-Neigh-board, K-: {neighbors}, score: {score}", loc='right')
+
+    plt.show()
 
 
-plt.show()
+def svm():
+    # SVM Methode implementieren
+    # Erstelle Support Vector Classifier
+
+    kernel = "linear"
+    clf = svm.SVC(kernel=kernel, gamma='auto')
+
+    # Training
+    clf.fit(images_train, labels_train)
+
+    # Predict the value
+    predicted = clf.predict(images_test)
+
+    # Score
+    score = clf.score(labels_test, predicted)
+    print(f'score: {score}')
+
+
+def linear():
+    # linear Modell implementieren
+    pass
+
+
+wahl = 1
+
+match wahl:
+    case 1:
+        knn()
+    case 2:
+        svm()
+    case 3:
+        linear()
+    case _:
+        print(f"kein Auswahl")
