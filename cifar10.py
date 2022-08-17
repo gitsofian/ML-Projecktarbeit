@@ -1,5 +1,6 @@
 from cifar_loader import CIFAR10
 import matplotlib.pyplot as plt
+from sklearn import svm
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix
@@ -25,10 +26,11 @@ for i, ax in enumerate(axes):
     ax.set_title(label_names[i], rotation='vertical')
     ax.axis("off")
 
+
 # --- Projektarbeit ---
 
 
-def knn():
+def do_knn():
 
     # K-Neigh-board Klasifisierung Methode
 
@@ -77,7 +79,7 @@ def knn():
     plt.show()
 
 
-def svm():
+def do_svm():
     # SVM Methode implementieren
     # Erstelle Support Vector Classifier
 
@@ -88,11 +90,36 @@ def svm():
     clf.fit(images_train, labels_train)
 
     # Predict the value
-    predicted = clf.predict(images_test)
+    pred_test = clf.predict(images_test)
 
     # Score
-    score = clf.score(labels_test, predicted)
-    print(f'score: {score}')
+    conf = confusion_matrix(labels_test, pred_test)
+    score = clf.score(images_test, labels_test)
+    print(f"score : {score:.5f}")
+
+    if conf is not None:
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        ax.imshow(conf, cmap="Blues")
+        # ax.axis("off")
+        ax.set_xlabel("prediction")
+        ax.set_ylabel("ground truth")
+
+        ax.set_xticks(range(10))
+        ax.set_yticks(range(10))
+
+        ax.set_xticklabels(label_names, rotation='vertical')
+        ax.set_yticklabels(label_names)
+
+        for i in range(10):
+            for j in range(10):
+                ax.text(j, i, "%d" % conf[i, j], color="red",
+                        horizontalalignment='center', verticalalignment='center')
+
+    plt.title(
+        f"Supprt Vector Machine, Kernel: {kernel}, score: {score}", loc='right')
+
+    plt.show()
 
 
 def linear():
@@ -100,13 +127,14 @@ def linear():
     pass
 
 
-wahl = 1
+wahl = 2
+
 
 match wahl:
     case 1:
-        knn()
+        do_knn()
     case 2:
-        svm()
+        do_svm()
     case 3:
         linear()
     case _:
